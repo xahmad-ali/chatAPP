@@ -5,8 +5,9 @@ import { Header, createStackNavigator } from '@react-navigation/stack';
 import { useState } from 'react';
 //import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Home } from './home.js';
-import { chat_screen } from './chat_screen.js';
-import { auth } from './fireBase.js';
+import { Chat_screen } from './chat_screen.js'
+import { auth,db,app } from './fireBase.js';
+import { addDoc, collection } from "firebase/firestore"; 
 
 import {signInAnonymously,signInWithEmailAndPassword,
   createUserWithEmailAndPassword,onAuthStateChanged} from 'firebase/auth';
@@ -21,7 +22,7 @@ export default function App() {
       <Stack.Navigator>
         <Stack.Screen name="Logs" component={Logs} options={headerShown=true} />
         <Stack.Screen name="Home" component={Home} />
-        <Stack.Screen name="chat_screen" component={chat_screen}/>
+        <Stack.Screen name="Chat_screen" component={Chat_screen}/>
 
       </Stack.Navigator>
     </NavigationContainer>
@@ -34,34 +35,40 @@ export default function App() {
 
 function Logs({navigation}) {
 
-  const [password,setPassword] = useState();
-  const [email,setEmail] = useState();
+  const [password, setPassword] = useState('');
+const [email, setEmail] = useState('');
+
+const handleSignUp = async () => {
+  try {
+    const userCredential = await createUserWithEmailAndPassword(auth,email, password);
+    const user = userCredential.user;
+    
+    console.log("User signed up:", user);
+
+       // Add user data to Firestore
+       const usersCollectionRef = collection(db, "users"); // Get reference to 'users' collection
+       const docRef = await addDoc(usersCollectionRef, { // Pass collection reference to addDoc
+         Email: email
+       })
+    console.log("Document written with ID:", docRef.id)
+    tohome(user);
+    
+  } catch (error) {
+    console.error("Error signing up:", error.message);
+  }
+};
 
 
-  
-  const handleSignUp=async()=>{
-    try { await createUserWithEmailAndPassword(auth,email,password)
-      .then((userCredss)=>{
-        const user=userCredss.user
-        console.warn(user)
-      })
-      
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const tohome=()=>{
-    navigation.navigate("Home")
+  const tohome=(user)=>{
+    navigation.navigate("Home",{user})
   }
 
   const handleLogin=async()=>{
-    try {await signInWithEmailAndPassword(auth,email,password)
-      .then((userCred)=>{
-        const user=userCred.user
-        console.warn(user)
-        tohome()
-      })
+    try {const userCredential=await signInWithEmailAndPassword(auth,email,password);
+      const user= userCredential.user
+      console.log("User logged in :",user);
+      tohome(user);
+     
     } catch (error) {
       if (error.code === 'auth/user-not-found') {
         console.log('User does not exist. Please sign up.');
