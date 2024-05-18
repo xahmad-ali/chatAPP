@@ -6,6 +6,7 @@ import { useState } from 'react';
 //import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Home } from './home.js';
 import { Chat_screen } from './chat_screen.js'
+import { Uploads } from './Uploads.js';
 import { auth,db,app } from './fireBase.js';
 import { addDoc, collection } from "firebase/firestore"; 
 
@@ -22,6 +23,7 @@ export default function App() {
       <Stack.Navigator>
         <Stack.Screen name="Logs" component={Logs} options={headerShown=true} />
         <Stack.Screen name="Home" component={Home} />
+        <Stack.Screen name="Uploads" component={Uploads}/>
         <Stack.Screen name="Chat_screen" component={Chat_screen}/>
 
       </Stack.Navigator>

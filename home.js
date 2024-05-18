@@ -79,8 +79,12 @@ const get_currentUser = async () => {
 
   const chat = (Remail,Rid,senderId) => {
     console.log(" go to chat ", { Remail,Rid,senderId, });
-    navigation.navigate("Chat_screen", {rEmail: Remail,reciverId:Rid,senderId:senderId });
+    navigation.navigate("Chat_screen", {reciverId:Rid,senderId:senderId });
   };
+
+  const go_upload=()=>{
+    navigation.navigate("Uploads",{senderId});
+  }
 
   return (
     <View>
@@ -113,8 +117,9 @@ const get_currentUser = async () => {
       <View style={{ padding: 30, alignSelf: "center" }}>
         <TouchableOpacity
           style={{ padding: 20, borderRadius: 15, backgroundColor: "plum" }}
+          onPress={go_upload}
         >
-          <Text>Chat Box</Text>
+          <Text>uploads</Text>
         </TouchableOpacity>
       </View>
     </View>
